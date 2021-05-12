@@ -11,10 +11,7 @@ connect.then((db) => {
   let newDish = Dishes({
     name: 'Rice',
     description: 'test',
-  });
-
-  newDish
-    .save()
+  })
     .then((dish) => {
       console.log(dish);
       return Dishes.find({}).exec();
