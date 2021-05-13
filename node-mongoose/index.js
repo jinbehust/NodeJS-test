@@ -8,7 +8,7 @@ const connect = mongoose.connect(url, { useNewUrlParser: true });
 connect.then((db) => {
   console.log('Connected correctly to server');
 
-  let newDish = Dishes({
+  Dishes.create({
     name: 'Rice',
     description: 'test',
   })
