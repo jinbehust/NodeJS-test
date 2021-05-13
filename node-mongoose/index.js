@@ -14,10 +14,25 @@ connect.then((db) => {
   })
     .then((dish) => {
       console.log(dish);
-      return Dishes.find({}).exec();
+      return Dishes.findByIdAndUpdate(
+        dish._id,
+        {
+          $set: { description: 'Update Test' },
+        },
+        { new: true }
+      ).exec();
     })
-    .then((dishes) => {
-      console.log(dishes);
+    .then((dish) => {
+      console.log(dish);
+      dish.comments.push({
+        rating: 5,
+        comment: "I'm getting a sinking felling!",
+        author: 'GiangDuc',
+      });
+      return dish.save();
+    })
+    .then((dish) => {
+      console.log(dish);
       return Dishes.deleteMany({});
     })
     .then(() => mongoose.connection.close())
