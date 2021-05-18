@@ -16,7 +16,7 @@ leaderRouter
       return res.json(leaders);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Leader not found: ' + err.message);
+      return res.json(`Leader not found: ${err.message}`);
     }
   })
   .post(async (req, res, next) => {
@@ -33,7 +33,7 @@ leaderRouter
       return res.json(leader);
     } catch (err) {
       res.statusCode = 500;
-      return res.json('Leader added failed: ' + err.message);
+      return res.json(`Leader added failed: ${err.message}`);
     }
   })
   .put((req, res, next) => {
@@ -52,7 +52,7 @@ leaderRouter
       return res.json('All leaders have been deleted!');
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   });
 
@@ -63,19 +63,19 @@ leaderRouter
       const leader = await Leader.findById(req.params.leaderId);
       if (!leader) {
         res.statusCode = 404;
-        return res.json('Leader ' + req.params.leaderId + ' not found!');
+        return res.json(`Leader ${req.params.leaderId} not found!`);
       }
       res.setHeader('Content-Type', 'applycation/json');
       res.json(leader);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   })
   .post((req, res, next) => {
     res.statusCode = 403;
     return res.end(
-      'POST operation not supported on /leaders/' + req.params.leaderId
+      `POST operation not supported on /leaders/${req.params.leaderId}`,
     );
   })
   .put(async (req, res, next) => {
@@ -85,13 +85,13 @@ leaderRouter
         {
           $set: req.body,
         },
-        { new: true }
+        { new: true },
       );
       res.setHeader('Content-Type', 'application/json');
       return res.json(leaderUpdate);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Leader ' + req.params.leaderId + ' not found!');
+      return res.json(`Leader ${req.params.leaderId} not found!`);
     }
   })
   .delete(async (req, res, next) => {
@@ -105,7 +105,7 @@ leaderRouter
       return res.json('Leader has been deleted!');
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   });
 

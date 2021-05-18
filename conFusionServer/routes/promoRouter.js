@@ -16,7 +16,7 @@ promotionRouter
       return res.json(promotions);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Promotion not found: ' + err.message);
+      return res.json(`Promotion not found: ${err.message}`);
     }
   })
   .post(async (req, res, next) => {
@@ -33,7 +33,7 @@ promotionRouter
       return res.json(promotion);
     } catch (err) {
       res.statusCode = 500;
-      return res.json('Promotion added failed: ' + err.message);
+      return res.json(`Promotion added failed: ${err.message}`);
     }
   })
   .put((req, res, next) => {
@@ -52,7 +52,7 @@ promotionRouter
       return res.json('All promotions have been deleted!');
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   });
 
@@ -63,19 +63,19 @@ promotionRouter
       const promotion = await Promotion.findById(req.params.promotionId);
       if (!promotion) {
         res.statusCode = 404;
-        return res.json('Promotion ' + req.params.promotionId + ' not found!');
+        return res.json(`Promotion ${req.params.promotionId} not found!`);
       }
       res.setHeader('Content-Type', 'applycation/json');
       res.json(promotion);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   })
   .post((req, res, next) => {
     res.statusCode = 403;
     return res.end(
-      'POST operation not supported on /promotions/' + req.params.promotionId
+      `POST operation not supported on /promotions/${req.params.promotionId}`,
     );
   })
   .put(async (req, res, next) => {
@@ -85,19 +85,19 @@ promotionRouter
         {
           $set: req.body,
         },
-        { new: true }
+        { new: true },
       );
       res.setHeader('Content-Type', 'application/json');
       return res.json(promotionUpdate);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Promotion ' + req.params.promotionId + ' not found!');
+      return res.json(`Promotion ${req.params.promotionId} not found!`);
     }
   })
   .delete(async (req, res, next) => {
     try {
       const promotion = await Promotion.findByIdAndRemove(
-        req.params.promotionId
+        req.params.promotionId,
       );
       if (!promotion) {
         res.statusCode = 404;
@@ -107,7 +107,7 @@ promotionRouter
       return res.json('Promotion has been deleted!');
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again: ' + err.message);
+      return res.json(`Failure. Please try again: ${err.message}`);
     }
   });
 
