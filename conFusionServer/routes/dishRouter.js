@@ -61,7 +61,7 @@ dishRouter
       const dish = await Dish.findById(req.params.dishId);
       if (!dish) {
         res.statusCode = 404;
-        return res.json('Dish ' + req.params.dishId + ' not found!');
+        return res.json(`Dish ${req.params.dishId} not found!`);
       }
       res.setHeader('Content-Type', 'applycation/json');
       res.json(dish);
@@ -73,7 +73,7 @@ dishRouter
   .post((req, res, next) => {
     res.statusCode = 403;
     return res.end(
-      'POST operation not supported on /dishes/' + req.params.dishId
+      `POST operation not supported on /dishes/${req.params.dishId}`,
     );
   })
   .put(async (req, res, next) => {
@@ -83,13 +83,13 @@ dishRouter
         {
           $set: req.body,
         },
-        { new: true }
+        { new: true },
       );
       res.setHeader('Content-Type', 'application/json');
       return res.json(dishUpdate);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Dish ' + req.params.dishId + ' not found!');
+      return res.json(`Dish ${req.params.dishId} not found!`);
     }
   })
   .delete(async (req, res, next) => {
@@ -137,9 +137,9 @@ dishRouter
   .put((req, res, next) => {
     res.statusCode = 403;
     return res.json(
-      'PUT operation not supported on /dishes/' +
-        req.params.dishId +
-        '/comments.'
+      `PUT operation not supported on /dishes/${
+        req.params.dishId
+      }/comments.`,
     );
   })
   .delete(async (req, res, next) => {
@@ -150,7 +150,7 @@ dishRouter
         return res.json('Comment not found. Please try again.');
       }
       if (dish) {
-        for (var i = dish.comments.length - 1; i >= 0; i--) {
+        for (let i = dish.comments.length - 1; i >= 0; i--) {
           dish.comments.id(dish.comments[i]._id).remove();
         }
         dish.save();
@@ -160,7 +160,7 @@ dishRouter
     } catch (err) {
       res.statusCode = 404;
       console.log(err.message);
-      return res.json('Err: ' + err.message);
+      return res.json(`Err: ${err.message}`);
     }
   });
 
@@ -177,16 +177,16 @@ dishRouter
       return res.json(dish.comments.id(req.params.commentId));
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Read failed comment: ' + err.message);
+      return res.json(`Read failed comment: ${err.message}`);
     }
   })
   .post((req, res, next) => {
     res.statusCode = 403;
     return res.json(
-      'POST operation not supported on /dishes/' +
-        req.params.dishId +
-        '/comments/' +
-        req.params.commentId
+      `POST operation not supported on /dishes/${
+        req.params.dishId
+      }/comments/${
+        req.params.commentId}`,
     );
   })
   .put(async (req, res, next) => {
@@ -205,17 +205,16 @@ dishRouter
         return res.json(dish.comments.id(req.params.commentId));
       }
       if (dish === null) {
-        err = new Error('Dish ' + req.params.dishId + ' not found.');
-        err.statusCode = 404;
-        return res.json(err.message);
-      } else {
-        err = new Error('Comment ' + req.params.commentId + ' not found.');
+        err = new Error(`Dish ${req.params.dishId} not found.`);
         err.statusCode = 404;
         return res.json(err.message);
       }
+      err = new Error(`Comment ${req.params.commentId} not found.`);
+      err.statusCode = 404;
+      return res.json(err.message);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Update failed comment: ' + err.message);
+      return res.json(`Update failed comment: ${err.message}`);
     }
   })
   .delete(async (req, res, next) => {
@@ -233,7 +232,7 @@ dishRouter
       }
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Delete failed comment: ' + err.message);
+      return res.json(`Delete failed comment: ${err.message}`);
     }
   });
 
