@@ -53,7 +53,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const auth = (req, res, next) => {
-  console.log(req.session);
   if (!req.session.user) {
     const err = new Error('You are not authenticated!');
     err.status = 403;
