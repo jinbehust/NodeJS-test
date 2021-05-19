@@ -25,7 +25,7 @@ connect.then(
   (db) => {
     console.log('Connected correctly to server');
   },
-  (err) => console.log(err.message),
+  (err) => console.log(err.message)
 );
 
 const app = express();
@@ -46,7 +46,7 @@ app.use(
     saveUninitialized: false,
     resave: false,
     store: new FileStore(),
-  }),
+  })
 );
 
 app.use('/', indexRouter);
