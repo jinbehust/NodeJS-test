@@ -1,4 +1,5 @@
 const express = require('express');
+const User = require('../models/user');
 
 const router = express.Router();
 
@@ -7,7 +8,6 @@ router.get('/', (req, res, next) => {
   res.send('respond with a resource');
 });
 
-<<<<<<< HEAD
 router.post('/signup', async (req, res, next) => {
   const userCheck = await User.findOne({ username: req.body.username });
   if (userCheck !== null) {
@@ -82,6 +82,4 @@ router.get('/logout', (req, res, next) => {
   }
 });
 
-=======
->>>>>>> parent of ce1c299 (Express Session Part 2 temp)
 module.exports = router;

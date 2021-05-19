@@ -25,7 +25,7 @@ connect.then(
   (db) => {
     console.log('Connected correctly to server');
   },
-  (err) => console.log(err.message)
+  (err) => console.log(err.message),
 );
 
 const app = express();
@@ -46,59 +46,31 @@ app.use(
     saveUninitialized: false,
     resave: false,
     store: new FileStore(),
-  })
+  }),
 );
 
-<<<<<<< HEAD
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const auth = (req, res, next) => {
-=======
-function authFunction(req, res, next) {
-  console.log(req.session);
-
->>>>>>> parent of ce1c299 (Express Session Part 2 temp)
   if (!req.session.user) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      const err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      next(err);
-      return;
-    }
-
-    // eslint-disable-next-line new-cap
-    const auth = new Buffer.from(authHeader.split(' ')[1], 'base64')
-      .toString()
-      .split(':');
-    const user = auth[0];
-    const pass = auth[1];
-    if (user === 'admin' && pass === 'password') {
-      req.session.user = 'admin';
-      next(); // authorized
-    } else {
-      const err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      next(err);
-    }
-  } else if (req.session.user === 'admin') {
+    const err = new Error('You are not authenticated!');
+    err.status = 403;
+    return next(err);
+  }
+  if (req.session.user === 'authenticated') {
     next();
   } else {
     const err = new Error('You are not authenticated!');
-    err.status = 401;
-    next(err);
+    err.status = 403;
+    return next(err);
   }
-}
+};
 
-app.use(authFunction);
+app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
