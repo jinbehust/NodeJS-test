@@ -19,12 +19,13 @@ opts.secretOrKey = config.secretKey;
 
 exports.jwtPassport = passport.use(
   new JwtStrategy(opts, async (jwtPayload, done) => {
-    console.log('JWT payload: ', jwtPayload);
     try {
-      const user = await User.findOne({ id: jwtPayload.sub });
+      const user = await User.findOne({ _id: jwtPayload._id });
       return done(null, user);
     } catch (err) {
       return done(err, false);
     }
   }),
 );
+
+exports.verifyUser = passport.authenticate('jwt', { session: false });

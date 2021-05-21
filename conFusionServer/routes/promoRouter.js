@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const authenticate = require('../authenticate');
 
 const Promotion = require('../models/promotions');
 
@@ -19,7 +20,7 @@ promotionRouter
       return res.json(`Promotion not found: ${err.message}`);
     }
   })
-  .post(async (req, res, next) => {
+  .post(authenticate.verifyUser, async (req, res, next) => {
     try {
       const promotions = await Promotion.findOne({
         name: req.body.name,
@@ -36,11 +37,11 @@ promotionRouter
       return res.json(`Promotion added failed: ${err.message}`);
     }
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.json('PUT operation not supported on /promotions');
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const promotions = await Promotion.find({});
       if (promotions.length === 0) {
@@ -72,13 +73,13 @@ promotionRouter
       return res.json(`Failure. Please try again: ${err.message}`);
     }
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.end(
       `POST operation not supported on /promotions/${req.params.promotionId}`,
     );
   })
-  .put(async (req, res, next) => {
+  .put(authenticate.verifyUser, async (req, res, next) => {
     try {
       const promotionUpdate = await Promotion.findByIdAndUpdate(
         req.params.promotionId,
@@ -94,7 +95,7 @@ promotionRouter
       return res.json(`Promotion ${req.params.promotionId} not found!`);
     }
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const promotion = await Promotion.findByIdAndRemove(
         req.params.promotionId,

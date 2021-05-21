@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const authenticate = require('../authenticate');
 
 const Dish = require('../models/dishes');
 
@@ -19,7 +20,7 @@ dishRouter
       return res.json('Dish not found.');
     }
   })
-  .post(async (req, res, next) => {
+  .post(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dishes = await Dish.findOne({ name: req.body.name }).exec();
       if (dishes) {
@@ -34,11 +35,11 @@ dishRouter
       return res.json('Dish added failed.');
     }
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.json('PUT operation not supported on /dishes');
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dishes = await Dish.find({});
       if (dishes.length === 0) {
@@ -70,13 +71,13 @@ dishRouter
       return res.json('Failure. Please try again.');
     }
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.end(
       `POST operation not supported on /dishes/${req.params.dishId}`,
     );
   })
-  .put(async (req, res, next) => {
+  .put(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dishUpdate = await Dish.findByIdAndUpdate(
         req.params.dishId,
@@ -92,7 +93,7 @@ dishRouter
       return res.json(`Dish ${req.params.dishId} not found!`);
     }
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findByIdAndRemove(req.params.dishId);
       if (!dish) {
@@ -111,7 +112,6 @@ dishRouter
   .route('/:dishId/comments')
   .get(async (req, res, next) => {
     try {
-      console.log(req.params.dishId);
       const dish = await Dish.findById(req.params.dishId);
       res.setHeader('Content-Type', 'applycation/json');
       return res.json(dish.comments);
@@ -120,7 +120,7 @@ dishRouter
       return res.json('Read failed comments!');
     }
   })
-  .post(async (req, res, next) => {
+  .post(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findById(req.params.dishId);
       if (dish) {
@@ -134,18 +134,15 @@ dishRouter
       return res.json('Comment added failed!');
     }
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.json(
-      `PUT operation not supported on /dishes/${
-        req.params.dishId
-      }/comments.`,
+      `PUT operation not supported on /dishes/${req.params.dishId}/comments.`,
     );
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findById(req.params.dishId);
-      console.log(dish);
       if (dish.comments.length === 0) {
         return res.json('Comment not found. Please try again.');
       }
@@ -159,7 +156,6 @@ dishRouter
       }
     } catch (err) {
       res.statusCode = 404;
-      console.log(err.message);
       return res.json(`Err: ${err.message}`);
     }
   });
@@ -180,16 +176,13 @@ dishRouter
       return res.json(`Read failed comment: ${err.message}`);
     }
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     return res.json(
-      `POST operation not supported on /dishes/${
-        req.params.dishId
-      }/comments/${
-        req.params.commentId}`,
+      `POST operation not supported on /dishes/${req.params.dishId}/comments/${req.params.commentId}`,
     );
   })
-  .put(async (req, res, next) => {
+  .put(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findById(req.params.dishId);
       if (dish !== null && dish.comments.id(req.params.commentId) !== null) {
@@ -217,10 +210,9 @@ dishRouter
       return res.json(`Update failed comment: ${err.message}`);
     }
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findById(req.params.dishId);
-      console.log(dish.comments);
       if (dish.comments.id(req.params.commentId) === null) {
         return res.json('Comment not found. Please try again.');
       }
