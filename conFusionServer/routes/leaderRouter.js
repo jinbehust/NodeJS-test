@@ -19,7 +19,7 @@ leaderRouter
       return res.json(`Leader not found: ${err.message}`);
     }
   })
-  .post(authenticate.verifyUser, async (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       const leaders = await Leader.findOne({
         name: req.body.name,
@@ -36,11 +36,11 @@ leaderRouter
       return res.json(`Leader added failed: ${err.message}`);
     }
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     return res.json('PUT operation not supported on /leaders');
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       const leaders = await Leader.find({});
       if (leaders.length === 0) {
@@ -72,13 +72,13 @@ leaderRouter
       return res.json(`Failure. Please try again: ${err.message}`);
     }
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     return res.end(
       `POST operation not supported on /leaders/${req.params.leaderId}`,
     );
   })
-  .put(authenticate.verifyUser, async (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       const leaderUpdate = await Leader.findByIdAndUpdate(
         req.params.leaderId,
@@ -94,7 +94,7 @@ leaderRouter
       return res.json(`Leader ${req.params.leaderId} not found!`);
     }
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       const leader = await Leader.findByIdAndRemove(req.params.leaderId);
       if (!leader) {

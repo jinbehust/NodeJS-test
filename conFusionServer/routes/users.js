@@ -6,9 +6,17 @@ const authenticate = require('../authenticate');
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/', (_req, res, next) => {
-  res.send('respond with a resource');
-});
+router.get(
+  '/',
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  async (req, res, next) => {
+    const users = await User.find({});
+    if (users) {
+      return res.json(users);
+    }
+  },
+);
 
 router.post('/signup', async (req, res, next) => {
   try {
@@ -34,21 +42,33 @@ router.post('/signup', async (req, res, next) => {
 });
 
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  const token = authenticate.getToken({ _id: req.user._id });
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
-  res.json({ success: true, token, status: 'You are successfully logged in!' });
+  try {
+    const token = authenticate.getToken({ _id: req.user._id });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ success: true, token, status: 'You are successfully logged in!' });
+  } catch (err) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ err });
+  }
 });
 
 router.get('/logout', (req, res, next) => {
-  if (req.session) {
-    req.session.destroy();
-    res.clearCookie('session-id');
-    res.redirect('/');
-  } else {
-    const err = new Error('You are not logged in');
-    err.status = 403;
-    next(err);
+  try {
+    if (req.session) {
+      req.session.destroy();
+      res.clearCookie('session-id');
+      res.redirect('/');
+    } else {
+      const err = new Error('You are not logged in');
+      err.status = 403;
+      next(err);
+    }
+  } catch (err) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ err });
   }
 });
 
