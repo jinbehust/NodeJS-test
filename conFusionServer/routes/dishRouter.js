@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { Error } = require('mongoose');
 const authenticate = require('../authenticate');
 
 const Dish = require('../models/dishes');
@@ -17,7 +18,7 @@ dishRouter
       return res.json(dishes);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Dish not found.');
+      return res.json(err.message);
     }
   })
   .post(
@@ -35,7 +36,7 @@ dishRouter
         return res.json(dish);
       } catch (err) {
         res.statusCode = 500;
-        return res.json('Dish added failed.');
+        return res.json(err.message);
       }
     },
   )
@@ -58,7 +59,7 @@ dishRouter
         return res.json('All dishes have been deleted!');
       } catch (err) {
         res.statusCode = 404;
-        return res.json('Failure. Please try again.');
+        return res.json(err.message);
       }
     },
   );
@@ -78,7 +79,7 @@ dishRouter
       res.json(dish);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Failure. Please try again.');
+      return res.json(err.message);
     }
   })
   .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
@@ -103,7 +104,7 @@ dishRouter
         return res.json(dishUpdate);
       } catch (err) {
         res.statusCode = 404;
-        return res.json(`Dish ${req.params.dishId} not found!`);
+        return res.json(err.message);
       }
     },
   )
@@ -121,7 +122,7 @@ dishRouter
         return res.json('Dish has been deleted!');
       } catch (err) {
         res.statusCode = 404;
-        return res.json('Failure. Please try again.');
+        return res.json(err.message);
       }
     },
   );
@@ -137,26 +138,26 @@ dishRouter
       return res.json(dish.comments);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Read failed comments!');
+      return res.json(err.message);
     }
   })
   .post(authenticate.verifyUser, async (req, res, next) => {
     try {
       const dish = await Dish.findById(req.params.dishId);
-      if (dish) {
+      if (dish && req.body.rating && req.body.comment) {
         req.body.author = req.user._id;
         dish.comments.push(req.body);
         dish.save();
-      }
-      const dish2 = await Dish.findById(dish._id).populate('comments.author');
-      if (dish2) {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'applycation/json');
-        return res.json(dish.comments);
+        return res.json('Comment has been added!');
       }
+      const err = new Error('Error! Please check and try again!');
+      err.status = 404;
+      return res.json(err.message);
     } catch (err) {
       res.statusCode = 404;
-      return res.json('Comment added failed!');
+      return res.json(err.message);
     }
   })
   .put(authenticate.verifyUser, (req, res, next) => {
@@ -184,7 +185,7 @@ dishRouter
         }
       } catch (err) {
         res.statusCode = 404;
-        return res.json(`Err: ${err.message}`);
+        return res.json(err.message);
       }
     },
   );
@@ -204,7 +205,7 @@ dishRouter
       return res.json(dish.comments.id(req.params.commentId));
     } catch (err) {
       res.statusCode = 404;
-      return res.json(`Read failed comment: ${err.message}`);
+      return res.json(err.message);
     }
   })
   .post(authenticate.verifyUser, (req, res, next) => {
