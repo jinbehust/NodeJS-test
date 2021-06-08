@@ -7,11 +7,12 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const config = require('./config');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const dishRouter = require('./routes/dishRouter');
-const promoRouter = require('./routes/promoRouter');
-const leaderRouter = require('./routes/leaderRouter');
+const indexRouter = require('./src/routes/index');
+const usersRouter = require('./src/routes/users');
+const dishRouter = require('./src/routes/dishRouter');
+const commentRouter = require('./src/routes/commentRouter');
+const promoRouter = require('./src/routes/promoRouter');
+const leaderRouter = require('./src/routes/leaderRouter');
 
 const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
@@ -47,6 +48,7 @@ app.use('/users', usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dishes', dishRouter);
+app.use('/dishes', commentRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
 

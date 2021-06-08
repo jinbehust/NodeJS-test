@@ -3,9 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start:build": "tsc -w",
-    "start:run": "nodemon ./bin/www",
-    "start": "concurrently npm:start:*"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
