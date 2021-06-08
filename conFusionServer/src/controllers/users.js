@@ -1,24 +1,15 @@
-const express = require('express');
 const passport = require('passport');
 const User = require('../models/user');
-const authenticate = require('../authenticate');
+const authenticate = require('../middlewares/authenticate');
 
-const router = express.Router();
+async function findUser(req, res) {
+  const users = await User.find({});
+  if (users) {
+    return res.json(users);
+  }
+}
 
-/* GET users listing. */
-router.get(
-  '/',
-  authenticate.verifyUser,
-  authenticate.verifyAdmin,
-  async (req, res, next) => {
-    const users = await User.find({});
-    if (users) {
-      return res.json(users);
-    }
-  },
-);
-
-router.post('/signup', async (req, res, next) => {
+async function signUp(req, res) {
   try {
     const user = await User.register(
       new User({ username: req.body.username }),
@@ -39,22 +30,22 @@ router.post('/signup', async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.json({ err });
   }
-});
+}
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
+async function logIn(req, res) {
   try {
-    const token = authenticate.getToken({ _id: req.user._id });
+    const token = await authenticate.getToken({ _id: req.user._id });
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json({ success: true, token, status: 'You are successfully logged in!' });
   } catch (err) {
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.json({ err });
+    res.json(err.message);
   }
-});
+}
 
-router.get('/logout', (req, res, next) => {
+function logOut(req, res, next) {
   try {
     if (req.session) {
       req.session.destroy();
@@ -70,6 +61,11 @@ router.get('/logout', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.json({ err });
   }
-});
+}
 
-module.exports = router;
+module.exports = {
+  findUser,
+  signUp,
+  logIn,
+  logOut,
+};
