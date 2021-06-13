@@ -17,4 +17,6 @@ router.post('/login', cors.corsWithOptions, passport.authenticate('local'), user
 
 router.get('/logout', cors.corsWithOptions, userController.logOut);
 
+router.get('/facebook/token', passport.authenticate('facebook-token'), userController.oAuthFacebook);
+
 module.exports = router;

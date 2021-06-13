@@ -7,6 +7,9 @@ async function findUser(req, res) {
   if (users) {
     return res.json(users);
   }
+  const err = new Error('Users not found!!!');
+  err.status = 404;
+  return res.json(err.message);
 }
 
 async function signUp(req, res) {
@@ -63,9 +66,25 @@ function logOut(req, res, next) {
   }
 }
 
+function oAuthFacebook(req, res) {
+  try {
+    if (req.user) {
+      const token = authenticate.getToken({ _id: req.user._id });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ success: true, token, status: 'You are successfully logged in!' });
+    }
+  } catch (err) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(err.message);
+  }
+}
+
 module.exports = {
   findUser,
   signUp,
   logIn,
   logOut,
+  oAuthFacebook,
 };
