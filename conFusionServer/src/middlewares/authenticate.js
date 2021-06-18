@@ -3,6 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
+const FacebookTokenStrategy = require('passport-facebook-token');
 
 const User = require('../models/user');
 const config = require('../../config');
@@ -46,3 +47,10 @@ exports.verifyAdmin = async (req, res, next) => {
     return res.json(err.message);
   }
 };
+
+exports.facebookPassport = passport.use(new FacebookTokenStrategy({
+  clientID: config.facebook.clientId,
+  clientSecret: config.facebook.clientSecret,
+}, (accessToken, refreshToken, profile, done) => {
+  User.findOne({ facebookId: profile.id }, (error, user) => done(error, user));
+}));
