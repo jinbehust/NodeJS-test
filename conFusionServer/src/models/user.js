@@ -13,6 +13,7 @@ const UserSchema = new Schema({
     type: String,
     default: '',
   },
+  facebookId: String,
   admin: {
     type: Boolean,
     default: false,
@@ -21,4 +22,4 @@ const UserSchema = new Schema({
 
 UserSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('user', UserSchema);

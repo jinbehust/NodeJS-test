@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const authenticate = require('../middlewares/authenticate');
+const cors = require('../middlewares/cors');
 
 const uploadController = require('../controllers/uploadController');
 
@@ -27,9 +28,10 @@ const uploadRouter = express.Router();
 
 uploadRouter.use(bodyParser.json());
 
-uploadRouter.get('/', uploadController.getImageFile);
-uploadRouter.post('/', authenticate.verifyUser, authenticate.verifyAdmin, upload.single('imageFile'), uploadController.postImageFile);
-uploadRouter.put('/', authenticate.verifyUser, authenticate.verifyAdmin, uploadController.putImageFile);
-uploadRouter.delete('/', authenticate.verifyUser, authenticate.verifyAdmin, uploadController.deleteImageFile);
+uploadRouter.options('/', cors.corsWithOptions, (req, res) => { res.sendStatus(200); });
+uploadRouter.get('/', cors.cors, authenticate.verifyUser, authenticate.verifyAdmin, uploadController.getImageFile);
+uploadRouter.post('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, upload.single('imageFile'), uploadController.postImageFile);
+uploadRouter.put('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, uploadController.putImageFile);
+uploadRouter.delete('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, uploadController.deleteImageFile);
 
 module.exports = uploadRouter;
