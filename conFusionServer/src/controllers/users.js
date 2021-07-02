@@ -3,9 +3,20 @@ const User = require('../models/user');
 const authenticate = require('../middlewares/authenticate');
 
 async function findUser(req, res) {
-  const users = await User.find({});
-  if (users) {
+  try {
+    const users = await User.find({});
+    if (!users) {
+      const err = new Error('You are not logged in');
+      err.status = 403;
+      return res.json(err.message);
+    }
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
     return res.json(users);
+  } catch (err) {
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'application/json');
+    return res.json(err.message);
   }
 }
 
