@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+require('dotenv').config();
 // const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const passport = require('passport');
@@ -26,19 +27,13 @@ const connect = mongoose.connect(url, {
 
 connect.then(
   () => {
-    console.log('Connected correctly to server');
+    console.log('Connected correctly to database');
   },
-  (err) => console.log(err.message),
+  (err) => console.log(err.message)
 );
 
 const app = express();
 
-app.all('*', (req, res, next) => {
-  if (req.secure) {
-    return next();
-  }
-  return res.redirect(307, `https://${req.hostname}:${app.get('secPort')}${req.url}`);
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -67,6 +62,29 @@ app.use('/favorites', favoriteRouter);
 app.use((req, res, next) => {
   next(createError(404));
 });
+
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+
+  if (Number.isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+const port = normalizePort(process.env.PORT || '3000');
+
+app.set('port', port);
+
+// Start Server
+app.listen(port, () => console.log(`Server listening on port ${port}`));
 
 // error handler
 app.use((err, req, res) => {

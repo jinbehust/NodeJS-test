@@ -8,7 +8,5 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 12,
   },
-  rules: {
-    'no-under-score': 'allow',
-  },
+  rules: {},
 };
